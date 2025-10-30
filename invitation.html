@@ -19,12 +19,13 @@
     <meta property="og:description" content="点击查看">
     <!-- 分享图片URL（必须是完整的HTTPS链接，建议1:1比例，最小300x300，推荐800x800像素，文件大小建议小于300KB） -->
     <!-- 注意：这里的值会在JavaScript中自动更新为 WECHAT_SHARE_IMAGE_URL 的值 -->
-    <!-- ⚠️ 如果微信仍显示旧图片，说明被缓存了，需要在图片URL后加版本参数（如：?v=2）强制刷新 -->
-    <meta property="og:image" content="https://uuumr.github.io/engagement-invitation/share_cover.png?v=2">
+    <!-- ⚠️ 如果微信仍显示旧图片，说明被缓存了，需要在图片URL后加版本参数（如：?v=10）强制刷新 -->
+    <!-- 如果还是显示旧图，请将版本号改为更大的数字，如 ?v=11, ?v=12 等 -->
+    <meta property="og:image" content="https://uuumr.github.io/engagement-invitation/share_cover.png?v=10">
     <!-- ⚠️ og:url：请替换为您部署后的完整链接（例如：https://您的用户名.github.io/仓库名/invitation.html） -->
     <!-- 注意：微信分享时不会执行JavaScript，所以必须在这里直接设置完整的URL -->
-    <!-- 添加版本参数?v=2强制微信重新抓取分享信息，如果还不行可以改为?v=3、?v=4等 -->
-    <meta property="og:url" content="https://uuumr.github.io/engagement-invitation/invitation.html?v=2">
+    <!-- 添加版本参数?v=10强制微信重新抓取分享信息，如果还不行可以改为?v=11、?v=12等 -->
+    <meta property="og:url" content="https://uuumr.github.io/engagement-invitation/invitation.html?v=10">
     <meta property="og:site_name" content="活动请柬">
     <meta property="og:image:type" content="image/png">
     <!-- 图片尺寸提示（需要与实际图片尺寸匹配） -->
@@ -34,19 +35,19 @@
     <!-- 微信特殊标签（优先级更高，微信也会读取这些） -->
     <meta itemprop="name" content="活动请柬">
     <meta itemprop="description" content="点击查看">
-    <meta itemprop="image" content="https://uuumr.github.io/engagement-invitation/share_cover.png?v=2">
+    <meta itemprop="image" content="https://uuumr.github.io/engagement-invitation/share_cover.png?v=10">
     
     <!-- 微信分享专用标签（补充，确保兼容性，使用大图卡片格式） -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="活动请柬">
     <meta name="twitter:description" content="点击查看">
-    <meta name="twitter:image" content="https://uuumr.github.io/engagement-invitation/share_cover.png?v=2">
+    <meta name="twitter:image" content="https://uuumr.github.io/engagement-invitation/share_cover.png?v=10">
     
     <!-- 微信专用标签（帮助微信更好地抓取图片） -->
     <meta name="weixin:card" content="summary_large_image">
     <meta name="weixin:title" content="活动请柬">
     <meta name="weixin:description" content="点击查看">
-    <meta name="weixin:image" content="https://uuumr.github.io/engagement-invitation/share_cover.png?v=2">
+    <meta name="weixin:image" content="https://uuumr.github.io/engagement-invitation/share_cover.png?v=10">
     
     <!-- 兼容微信浏览器 -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -356,9 +357,9 @@
 <body>
     <!-- 隐藏的图片标签（帮助微信抓取分享图片，不使用display:none，而是visibility:hidden） -->
     <!-- 注意：这里的src会在JavaScript中自动更新为 WECHAT_SHARE_IMAGE_URL 的值 -->
-    <!-- ⚠️ 添加版本参数?v=2强制微信重新抓取，如果还不行可以改为?v=3、?v=4等 -->
+    <!-- ⚠️ 添加版本参数?v=10强制微信重新抓取，如果还不行可以改为?v=11、?v=12等 -->
     <img style="visibility: hidden; height: 0; width: 0; position: absolute;" 
-         src="https://uuumr.github.io/engagement-invitation/share_cover.png?v=2" 
+         src="https://uuumr.github.io/engagement-invitation/share_cover.png?v=10" 
          alt="分享图片">
     
     <div class="container">
