@@ -11,23 +11,33 @@
     <title>活动请柬</title>
     <meta name="description" content="欢迎参加我们的活动！">
     
-    <!-- 微信分享 Meta 标签 -->
+    <!-- 微信分享 Meta 标签（Open Graph协议，微信会根据这些标签生成分享预览卡片） -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="活动请柬">
     <meta property="og:description" content="欢迎参加我们的活动！点击查看活动地点和导航信息。">
-    <meta property="og:image" content="https://via.placeholder.com/600x400/667eea/ffffff?text=活动请柬">
+    <!-- 注意：图片URL会在页面加载时通过JavaScript更新为实际图片 -->
+    <meta property="og:image" content="https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg">
     <meta property="og:url" content="">
     <meta property="og:site_name" content="活动请柬">
+    <!-- 图片尺寸提示（微信推荐图片不小于300x300像素，最好是1:1比例） -->
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="400">
     
-    <!-- 微信特殊标签（优先级更高） -->
+    <!-- 微信特殊标签（优先级更高，微信也会读取这些） -->
     <meta itemprop="name" content="活动请柬">
     <meta itemprop="description" content="欢迎参加我们的活动！点击查看活动地点和导航信息。">
-    <meta itemprop="image" content="https://via.placeholder.com/600x400/667eea/ffffff?text=活动请柬">
+    <meta itemprop="image" content="https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg">
+    
+    <!-- 微信分享专用标签（补充，确保兼容性） -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="活动请柬">
+    <meta name="twitter:description" content="欢迎参加我们的活动！点击查看活动地点和导航信息。">
+    <meta name="twitter:image" content="https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg">
     
     <!-- 兼容微信浏览器 -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <!-- 微信JS-SDK（用于调用微信内置地图） -->
+    <!-- 微信JS-SDK（用于调用微信内置地图和分享功能） -->
     <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
     
     <style>
@@ -372,10 +382,6 @@
                             <span class="map-picker-icon">📍</span>
                             <span class="map-picker-text">百度地图</span>
                         </div>
-                        <div class="map-picker-option" onclick="selectMap('apple');">
-                            <span class="map-picker-icon">🍎</span>
-                            <span class="map-picker-text">苹果地图</span>
-                        </div>
                         <div class="map-picker-option" onclick="selectMap('google');">
                             <span class="map-picker-icon">🌍</span>
                             <span class="map-picker-text">谷歌地图</span>
@@ -494,20 +500,48 @@
 
             if (titleMeta) titleMeta.setAttribute('content', SHARE_CONFIG.title);
             if (descMeta) descMeta.setAttribute('content', SHARE_CONFIG.desc);
-            if (imgMeta) imgMeta.setAttribute('content', SHARE_CONFIG.imgUrl);
-            if (urlMeta) urlMeta.setAttribute('content', window.location.href);
+            if (imgMeta) {
+                // 确保图片URL是完整的HTTPS链接（微信要求必须使用HTTPS）
+                // 添加时间戳参数防止缓存，确保分享时显示最新图片
+                let imageUrl = SHARE_CONFIG.imgUrl;
+                if (imageUrl && imageUrl.indexOf('http') === 0) {
+                    // 已经是完整URL，添加版本号防止缓存
+                    const separator = imageUrl.indexOf('?') > -1 ? '&' : '?';
+                    imageUrl = imageUrl + separator + '_v=' + new Date().getTime();
+                }
+                imgMeta.setAttribute('content', imageUrl);
+            }
+            if (urlMeta) {
+                const currentUrl = window.location.href || window.location.protocol + '//' + window.location.host + window.location.pathname;
+                urlMeta.setAttribute('content', currentUrl);
+            }
 
-            // 更新itemprop
+            // 更新itemprop（微信也会读取这些标签）
             const itemName = document.querySelector('meta[itemprop="name"]');
             const itemDesc = document.querySelector('meta[itemprop="description"]');
             const itemImg = document.querySelector('meta[itemprop="image"]');
             
             if (itemName) itemName.setAttribute('content', SHARE_CONFIG.title);
             if (itemDesc) itemDesc.setAttribute('content', SHARE_CONFIG.desc);
-            if (itemImg) itemImg.setAttribute('content', SHARE_CONFIG.imgUrl);
+            if (itemImg) {
+                let imageUrl = SHARE_CONFIG.imgUrl;
+                if (imageUrl && imageUrl.indexOf('http') === 0) {
+                    const separator = imageUrl.indexOf('?') > -1 ? '&' : '?';
+                    imageUrl = imageUrl + separator + '_v=' + new Date().getTime();
+                }
+                itemImg.setAttribute('content', imageUrl);
+            }
             
             // 更新title
             document.title = SHARE_CONFIG.title;
+            
+            // 输出调试信息（按F12打开控制台查看）
+            console.log('✅ 微信分享配置已更新：', {
+                title: SHARE_CONFIG.title,
+                desc: SHARE_CONFIG.desc,
+                imgUrl: SHARE_CONFIG.imgUrl,
+                currentUrl: window.location.href
+            });
         }
 
         // 检测是否在微信中打开
