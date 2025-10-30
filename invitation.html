@@ -39,7 +39,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: white;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -53,7 +53,7 @@
         .container {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             max-width: 600px;
             width: 100%;
             overflow: hidden;
@@ -107,8 +107,30 @@
             line-height: 1.6;
         }
 
+        /* 地图图片样式 */
+        .location-map-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 20px 0;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .location-map-image:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .location-map-image:active {
+            transform: translateY(0);
+        }
+
         .nav-buttons {
-            display: flex;
+            display: none; /* 隐藏导航按钮 */
             flex-wrap: wrap;
             gap: 12px;
             justify-content: center;
@@ -219,6 +241,14 @@
             <p class="location-address" id="locationAddress">
                 北京市朝阳区XX路XX号XX大厦
             </p>
+            
+            <!-- 可点击的地图图片 -->
+            <img src="https://uuumr.github.io/engagement-invitation/hotel_map.png" 
+                 alt="酒店位置地图" 
+                 class="location-map-image"
+                 id="locationMapImage"
+                 onclick="openWeChatMap(); return false;"
+                 title="点击查看地图位置">
             
             <div class="nav-buttons">
                 <a href="#" class="nav-button amap" onclick="openNavigation('amap'); return false;">
@@ -363,6 +393,41 @@
                     }
                 });
             });
+        }
+
+        // 打开微信地图（专门用于点击地图图片）
+        function openWeChatMap() {
+            let lng = LOCATION_COORDINATES.longitude;
+            let lat = LOCATION_COORDINATES.latitude;
+            const name = LOCATION_NAME;
+            
+            // 自动检测并修复可能的坐标反转问题
+            if (lng && lat) {
+                if (lng >= 18 && lng <= 54 && lat >= 73 && lat <= 135) {
+                    console.warn('自动修复：检测到经纬度可能填反，已自动交换');
+                    const temp = lng;
+                    lng = lat;
+                    lat = temp;
+                }
+            }
+
+            if (!lng || !lat) {
+                alert('未设置坐标，无法打开地图');
+                return;
+            }
+
+            // 如果在微信中，使用微信内置地图（腾讯地图URI）
+            if (isWeChat()) {
+                // 使用腾讯地图URI，微信会自动调用内置地图
+                const url = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${lat},${lng};title:${encodeURIComponent(name)};addr:${encodeURIComponent(name)}`;
+                window.location.href = url;
+                console.log('打开微信地图：', url);
+            } else {
+                // 不在微信中，使用腾讯地图网页版
+                const url = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${lat},${lng};title:${encodeURIComponent(name)};addr:${encodeURIComponent(name)}`;
+                window.open(url, '_blank');
+                console.log('打开腾讯地图：', url);
+            }
         }
 
         // 导航函数
