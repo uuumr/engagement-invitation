@@ -11,27 +11,32 @@
     <title>活动请柬</title>
     <meta name="description" content="欢迎参加我们的活动！">
     
-    <!-- 微信分享 Meta 标签（Open Graph协议，微信会根据这些标签生成分享预览卡片） -->
+    <!-- 微信分享 Meta 标签（Open Graph协议，优化为图片分享形式） -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="活动请柬">
-    <meta property="og:description" content="欢迎参加我们的活动！点击查看活动地点和导航信息。">
-    <!-- 注意：图片URL会在页面加载时通过JavaScript更新为实际图片 -->
+    <meta property="og:description" content="点击查看">
+    <!-- 注意：图片URL会在页面加载时通过JavaScript自动更新为您设置的分享图片 -->
+    <!-- 为了让分享看起来更像图片，建议使用1:1比例的大尺寸图片（如800x800、1200x1200） -->
     <meta property="og:image" content="https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg">
     <meta property="og:url" content="">
     <meta property="og:site_name" content="活动请柬">
-    <!-- 图片尺寸提示（微信推荐图片不小于300x300像素，最好是1:1比例） -->
-    <meta property="og:image:width" content="600">
-    <meta property="og:image:height" content="400">
+    <!-- 图片尺寸提示（推荐正方形，让分享卡片看起来更像图片） -->
+    <!-- 建议实际图片尺寸为：1:1比例，最小500x500，推荐800x800或更大 -->
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="800">
+    <meta property="og:image:height" content="800">
     
     <!-- 微信特殊标签（优先级更高，微信也会读取这些） -->
+    <!-- 图片URL会在JavaScript中动态更新（使用WECHAT_SHARE_IMAGE_URL配置） -->
     <meta itemprop="name" content="活动请柬">
-    <meta itemprop="description" content="欢迎参加我们的活动！点击查看活动地点和导航信息。">
+    <meta itemprop="description" content="点击查看">
     <meta itemprop="image" content="https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg">
     
-    <!-- 微信分享专用标签（补充，确保兼容性） -->
+    <!-- 微信分享专用标签（补充，确保兼容性，使用大图卡片格式） -->
+    <!-- 图片URL会在JavaScript中动态更新（使用WECHAT_SHARE_IMAGE_URL配置） -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="活动请柬">
-    <meta name="twitter:description" content="欢迎参加我们的活动！点击查看活动地点和导航信息。">
+    <meta name="twitter:description" content="点击查看">
     <meta name="twitter:image" content="https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg">
     
     <!-- 兼容微信浏览器 -->
@@ -450,14 +455,33 @@
         // longitude: null,
         // latitude: null
 
-        // 请柬图片URL（替换为您自己的图片链接）
+        // 请柬图片URL（替换为您自己的图片链接，这是网页中显示的图片）
         const INVITATION_IMAGE_URL = "https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg";
 
-        // 微信分享配置（请修改这些信息）
+        // ==================== 微信分享图片配置（可以独立设置） ====================
+        // ⭐ 重要：这里是分享到微信时显示的图片URL，可以与上面的请柬图片不同
+        // 
+        // 使用方法：
+        // 1. 将您的分享图片上传到服务器（或使用图床），获得HTTPS链接
+        // 2. 将链接填写到下面的 WECHAT_SHARE_IMAGE_URL
+        // 3. 如果不想单独设置分享图片，可以留空或设置为 null，将自动使用上面的请柬图片
+        //
+        // 📸 图片要求：
+        // - 必须是完整的HTTPS链接（不能是相对路径）
+        // - 建议尺寸：1:1比例（正方形），例如600x600、800x800、1200x1200像素
+        // - 图片内容建议包含所有重要信息（时间、地点、主题等），因为描述会被最小化
+        // - 图片必须可以直接访问，支持跨域
+        //
+        const WECHAT_SHARE_IMAGE_URL = "https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg";
+        // 如果不想单独设置，可以使用请柬图片：const WECHAT_SHARE_IMAGE_URL = INVITATION_IMAGE_URL;
+        // 或者设置为 null 自动使用请柬图片：const WECHAT_SHARE_IMAGE_URL = null;
+        // ========================================================================
+
+        // 微信分享配置（优化为图片分享形式：分享时以大图显示，点击后打开请柬链接）
         const SHARE_CONFIG = {
-            title: "活动请柬",
-            desc: "欢迎参加我们的活动！",
-            imgUrl: INVITATION_IMAGE_URL  // 分享预览图的URL，建议尺寸：300x300 或更大
+            title: "活动请柬",  // 分享时显示的标题（保持简短，图片是主要展示内容）
+            desc: "点击查看",    // 分享时显示的描述（已简化，突出图片视觉效果）
+            imgUrl: WECHAT_SHARE_IMAGE_URL || INVITATION_IMAGE_URL  // 分享预览图的URL（优先使用WECHAT_SHARE_IMAGE_URL）
         };
 
         // ==================== 代码区域（无需修改）====================
