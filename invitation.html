@@ -26,6 +26,10 @@
     
     <!-- 兼容微信浏览器 -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- 微信JS-SDK（用于调用微信内置地图） -->
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -276,7 +280,7 @@
         // latitude: null
 
         // 请柬图片URL（替换为您自己的图片链接）
-        const INVITATION_IMAGE_URL = "https://via.placeholder.com/600x400/667eea/ffffff?text=活动请柬";
+        const INVITATION_IMAGE_URL = "https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg";
 
         // 微信分享配置（请修改这些信息）
         const SHARE_CONFIG = {
@@ -366,7 +370,7 @@
             let url = '';
             let lng = LOCATION_COORDINATES.longitude;
             let lat = LOCATION_COORDINATES.latitude;
-            const name = encodeURIComponent(LOCATION_NAME);
+            const name = LOCATION_NAME;  // 使用原始名称，不在这里编码
             
             // 自动检测并修复可能的坐标反转问题
             if (lng && lat) {
@@ -379,12 +383,49 @@
                 }
             }
 
+            // 如果在微信中，优先使用微信内置地图（腾讯地图）
+            if (isWeChat() && lng && lat) {
+                // 方案1：使用微信JS-SDK的wx.openLocation（推荐，需要配置JS-SDK）
+                // 如果配置了微信JS-SDK，可以使用以下代码（取消注释并配置）
+                /*
+                if (typeof wx !== 'undefined' && wx.openLocation) {
+                    wx.openLocation({
+                        latitude: lat,
+                        longitude: lng,
+                        name: name,
+                        address: name,
+                        scale: 18,
+                        infoUrl: ''
+                    });
+                    return;
+                }
+                */
+                
+                // 方案2：使用腾讯地图URI（微信内置会很好地处理，无需配置）
+                // 在微信中，腾讯地图URI会优先调用微信内置地图
+                url = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${lat},${lng};title:${encodeURIComponent(name)};addr:${encodeURIComponent(name)}`;
+                
+                // 备用方案：导航路线（如果需要导航功能，取消下面这行的注释）
+                // url = `https://apis.map.qq.com/uri/v1/route?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${encodeURIComponent(name)}`;
+                
+                console.log('微信中打开地图：', {
+                    longitude: lng,
+                    latitude: lat,
+                    name: name,
+                    url: url
+                });
+                
+                window.location.href = url;  // 在微信中使用location.href，而不是open
+                return;
+            }
+
             switch(mapType) {
                 case 'amap':
                     // 高德地图
                     if (lng && lat) {
                         // 使用高德地图标记点URI（最可靠的方式，支持网页和APP）
                         // 格式：https://uri.amap.com/marker?position=经度,纬度&name=名称
+                        // 注意：name参数需要URL编码
                         url = `https://uri.amap.com/marker?position=${lng},${lat}&name=${encodeURIComponent(name)}`;
                         
                         // 如果marker格式不工作，可以尝试以下备用方案：
@@ -410,18 +451,18 @@
                 case 'baidu':
                     // 百度地图
                     if (lng && lat) {
-                        url = `https://api.map.baidu.com/direction?destination=latlng:${lat},${lng}|name:${name}&mode=driving&coord_type=gcj02`;
+                        url = `https://api.map.baidu.com/direction?destination=latlng:${lat},${lng}|name:${encodeURIComponent(name)}&mode=driving&coord_type=gcj02`;
                     } else {
-                        url = `https://map.baidu.com/search/${name}/@${lng || 116.397128},${lat || 39.916527},13z`;
+                        url = `https://map.baidu.com/search/${encodeURIComponent(name)}/@${lng || 116.397128},${lat || 39.916527},13z`;
                     }
                     break;
 
                 case 'tencent':
                     // 腾讯地图
                     if (lng && lat) {
-                        url = `https://apis.map.qq.com/uri/v1/route?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${name}`;
+                        url = `https://apis.map.qq.com/uri/v1/route?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${encodeURIComponent(name)}`;
                     } else {
-                        url = `https://map.qq.com/search/${name}`;
+                        url = `https://map.qq.com/search/${encodeURIComponent(name)}`;
                     }
                     break;
 
@@ -430,7 +471,7 @@
                     if (lng && lat) {
                         url = `http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`;
                     } else {
-                        url = `http://maps.apple.com/?q=${name}`;
+                        url = `http://maps.apple.com/?q=${encodeURIComponent(name)}`;
                     }
                     break;
 
