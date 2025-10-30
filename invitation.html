@@ -618,14 +618,10 @@
                 case 'tencent':
                     // 腾讯地图
                     if (lng && lat) {
-                        // 在微信中，使用微信内置地图（腾讯地图URI）
-                        if (isWeChat()) {
-                            // 使用navigation API，支持导航功能，在微信中会自动调用微信内置地图
-                            url = `https://apis.map.qq.com/uri/v1/navigation?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${encodeURIComponent(name)}`;
-                        } else {
-                            // 非微信环境，使用navigation API支持导航（route API已不支持）
-                            url = `https://apis.map.qq.com/uri/v1/navigation?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${encodeURIComponent(name)}`;
-                        }
+                        // 使用marker API（统一使用，支持微信和非微信环境）
+                        // marker API会显示标记点，用户可以点击标记点上的导航按钮进行导航
+                        // 在微信中会自动调用微信内置地图
+                        url = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${lat},${lng};title:${encodeURIComponent(name)};addr:${encodeURIComponent(name)}`;
                     } else {
                         // 使用地点名称搜索
                         url = `https://map.qq.com/search/${encodeURIComponent(name)}`;
@@ -725,4 +721,3 @@
     </script>
 </body>
 </html>
-
