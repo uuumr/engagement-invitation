@@ -129,6 +129,111 @@
             transform: translateY(0);
         }
 
+        /* 地图选择弹窗样式 */
+        .map-picker-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            animation: fadeInOverlay 0.3s ease;
+        }
+
+        .map-picker-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeInOverlay {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .map-picker-sheet {
+            background: white;
+            border-radius: 16px 16px 0 0;
+            width: 100%;
+            max-width: 600px;
+            padding-bottom: env(safe-area-inset-bottom);
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .map-picker-handle {
+            width: 36px;
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            margin: 12px auto;
+        }
+
+        .map-picker-options {
+            padding: 8px 0;
+        }
+
+        .map-picker-option {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .map-picker-option:active {
+            background-color: #f5f5f5;
+        }
+
+        .map-picker-option:last-child {
+            border-bottom: none;
+        }
+
+        .map-picker-icon {
+            font-size: 24px;
+            margin-right: 12px;
+            width: 32px;
+            text-align: center;
+        }
+
+        .map-picker-text {
+            font-size: 17px;
+            color: #333;
+            flex: 1;
+        }
+
+        .map-picker-cancel {
+            margin: 8px 16px 16px;
+            padding: 16px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 17px;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .map-picker-cancel:active {
+            background-color: #e5e5e5;
+        }
+
         .nav-buttons {
             display: none; /* 隐藏导航按钮 */
             flex-wrap: wrap;
@@ -247,8 +352,34 @@
                  alt="酒店位置地图" 
                  class="location-map-image"
                  id="locationMapImage"
-                 onclick="openWeChatMap(); return false;"
+                 onclick="showMapPicker(); return false;"
                  title="点击查看地图位置">
+            
+            <!-- 地图选择弹窗 -->
+            <div class="map-picker-overlay" id="mapPickerOverlay" onclick="hideMapPicker();">
+                <div class="map-picker-sheet" onclick="event.stopPropagation();">
+                    <div class="map-picker-handle"></div>
+                    <div class="map-picker-options">
+                        <div class="map-picker-option" onclick="selectMap('tencent');">
+                            <span class="map-picker-icon">🧭</span>
+                            <span class="map-picker-text">腾讯地图</span>
+                        </div>
+                        <div class="map-picker-option" onclick="selectMap('amap');">
+                            <span class="map-picker-icon">🗺️</span>
+                            <span class="map-picker-text">高德地图</span>
+                        </div>
+                        <div class="map-picker-option" onclick="selectMap('baidu');">
+                            <span class="map-picker-icon">📍</span>
+                            <span class="map-picker-text">百度地图</span>
+                        </div>
+                        <div class="map-picker-option" onclick="selectMap('apple');">
+                            <span class="map-picker-icon">🍎</span>
+                            <span class="map-picker-text">苹果地图</span>
+                        </div>
+                    </div>
+                    <div class="map-picker-cancel" onclick="hideMapPicker();">取消</div>
+                </div>
+            </div>
             
             <div class="nav-buttons">
                 <a href="#" class="nav-button amap" onclick="openNavigation('amap'); return false;">
@@ -395,39 +526,30 @@
             });
         }
 
-        // 打开微信地图（专门用于点击地图图片）
-        function openWeChatMap() {
-            let lng = LOCATION_COORDINATES.longitude;
-            let lat = LOCATION_COORDINATES.latitude;
-            const name = LOCATION_NAME;
-            
-            // 自动检测并修复可能的坐标反转问题
-            if (lng && lat) {
-                if (lng >= 18 && lng <= 54 && lat >= 73 && lat <= 135) {
-                    console.warn('自动修复：检测到经纬度可能填反，已自动交换');
-                    const temp = lng;
-                    lng = lat;
-                    lat = temp;
-                }
+        // 显示地图选择器
+        function showMapPicker() {
+            const overlay = document.getElementById('mapPickerOverlay');
+            if (overlay) {
+                overlay.classList.add('show');
+                // 防止背景滚动
+                document.body.style.overflow = 'hidden';
             }
+        }
 
-            if (!lng || !lat) {
-                alert('未设置坐标，无法打开地图');
-                return;
+        // 隐藏地图选择器
+        function hideMapPicker() {
+            const overlay = document.getElementById('mapPickerOverlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+                // 恢复背景滚动
+                document.body.style.overflow = '';
             }
+        }
 
-            // 如果在微信中，使用微信内置地图（腾讯地图URI）
-            if (isWeChat()) {
-                // 使用腾讯地图URI，微信会自动调用内置地图
-                const url = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${lat},${lng};title:${encodeURIComponent(name)};addr:${encodeURIComponent(name)}`;
-                window.location.href = url;
-                console.log('打开微信地图：', url);
-            } else {
-                // 不在微信中，使用腾讯地图网页版
-                const url = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${lat},${lng};title:${encodeURIComponent(name)};addr:${encodeURIComponent(name)}`;
-                window.open(url, '_blank');
-                console.log('打开腾讯地图：', url);
-            }
+        // 选择地图并打开
+        function selectMap(mapType) {
+            hideMapPicker();
+            openNavigation(mapType);
         }
 
         // 导航函数
@@ -446,42 +568,6 @@
                     lng = lat;
                     lat = temp;
                 }
-            }
-
-            // 如果在微信中，优先使用微信内置地图（腾讯地图）
-            if (isWeChat() && lng && lat) {
-                // 方案1：使用微信JS-SDK的wx.openLocation（推荐，需要配置JS-SDK）
-                // 如果配置了微信JS-SDK，可以使用以下代码（取消注释并配置）
-                /*
-                if (typeof wx !== 'undefined' && wx.openLocation) {
-                    wx.openLocation({
-                        latitude: lat,
-                        longitude: lng,
-                        name: name,
-                        address: name,
-                        scale: 18,
-                        infoUrl: ''
-                    });
-                    return;
-                }
-                */
-                
-                // 方案2：使用腾讯地图URI（微信内置会很好地处理，无需配置）
-                // 在微信中，腾讯地图URI会优先调用微信内置地图
-                url = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${lat},${lng};title:${encodeURIComponent(name)};addr:${encodeURIComponent(name)}`;
-                
-                // 备用方案：导航路线（如果需要导航功能，取消下面这行的注释）
-                // url = `https://apis.map.qq.com/uri/v1/route?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${encodeURIComponent(name)}`;
-                
-                console.log('微信中打开地图：', {
-                    longitude: lng,
-                    latitude: lat,
-                    name: name,
-                    url: url
-                });
-                
-                window.location.href = url;  // 在微信中使用location.href，而不是open
-                return;
             }
 
             switch(mapType) {
@@ -525,7 +611,12 @@
                 case 'tencent':
                     // 腾讯地图
                     if (lng && lat) {
-                        url = `https://apis.map.qq.com/uri/v1/route?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${encodeURIComponent(name)}`;
+                        // 在微信中，使用微信内置地图（腾讯地图URI）
+                        if (isWeChat()) {
+                            url = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${lat},${lng};title:${encodeURIComponent(name)};addr:${encodeURIComponent(name)}`;
+                        } else {
+                            url = `https://apis.map.qq.com/uri/v1/route?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${encodeURIComponent(name)}`;
+                        }
                     } else {
                         url = `https://map.qq.com/search/${encodeURIComponent(name)}`;
                     }
@@ -551,7 +642,12 @@
             }
 
             if (url) {
-                window.open(url, '_blank');
+                // 在微信中选择腾讯地图时，使用location.href直接跳转
+                if (isWeChat() && mapType === 'tencent') {
+                    window.location.href = url;
+                } else {
+                    window.open(url, '_blank');
+                }
             }
         }
 
