@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <!-- 基础信息 -->
+    <title>活动请柬</title>
+    <meta name="description" content="欢迎参加我们的活动！">
+    
+    <!-- 微信分享 Meta 标签 -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="活动请柬">
+    <meta property="og:description" content="欢迎参加我们的活动！点击查看活动地点和导航信息。">
+    <meta property="og:image" content="https://via.placeholder.com/600x400/667eea/ffffff?text=活动请柬">
+    <meta property="og:url" content="">
+    <meta property="og:site_name" content="活动请柬">
+    
+    <!-- 微信特殊标签（优先级更高） -->
+    <meta itemprop="name" content="活动请柬">
+    <meta itemprop="description" content="欢迎参加我们的活动！点击查看活动地点和导航信息。">
+    <meta itemprop="image" content="https://via.placeholder.com/600x400/667eea/ffffff?text=活动请柬">
+    
+    <!-- 兼容微信浏览器 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+            /* 防止微信中下拉出现背景 */
+            overscroll-behavior-y: none;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .image-container {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invitation-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            image-rendering: -webkit-optimize-contrast;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .location-section {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .location-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .location-address {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .nav-button {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-button:active {
+            transform: translateY(0);
+        }
+
+        .amap {
+            background: linear-gradient(135deg, #0091ff 0%, #0066cc 100%);
+        }
+
+        .baidu {
+            background: linear-gradient(135deg, #3385ff 0%, #1a6fd8 100%);
+        }
+
+        .tencent {
+            background: linear-gradient(135deg, #0ba58c 0%, #088a75 100%);
+        }
+
+        .apple {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+        }
+
+        .google {
+            background: linear-gradient(135deg, #4285f4 0%, #1976d2 100%);
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        /* 微信浏览器优化 */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                border-radius: 15px;
+            }
+
+            .location-section {
+                padding: 20px 15px;
+            }
+
+            .nav-button {
+                min-width: 100%;
+                padding: 16px 20px;
+                font-size: 17px;
+            }
+
+            .location-title {
+                font-size: 20px;
+                margin-bottom: 12px;
+            }
+
+            .location-address {
+                font-size: 15px;
+                margin-bottom: 20px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 请柬图片区域 -->
+        <div class="image-container">
+            <!-- 替换下面的图片URL为您的请柬图片 -->
+            <img src="https://via.placeholder.com/600x400/667eea/ffffff?text=活动请柬" 
+                 alt="活动请柬" 
+                 class="invitation-image"
+                 id="invitationImage">
+        </div>
+
+        <!-- 导航区域 -->
+        <div class="location-section">
+            <h2 class="location-title">📍 活动地点</h2>
+            <p class="location-address" id="locationAddress">
+                北京市朝阳区XX路XX号XX大厦
+            </p>
+            
+            <div class="nav-buttons">
+                <a href="#" class="nav-button amap" onclick="openNavigation('amap'); return false;">
+                    <span>🗺️</span>
+                    <span>高德地图</span>
+                </a>
+                <a href="#" class="nav-button baidu" onclick="openNavigation('baidu'); return false;">
+                    <span>📍</span>
+                    <span>百度地图</span>
+                </a>
+                <a href="#" class="nav-button tencent" onclick="openNavigation('tencent'); return false;">
+                    <span>🧭</span>
+                    <span>腾讯地图</span>
+                </a>
+                <a href="#" class="nav-button apple" onclick="openNavigation('apple'); return false;">
+                    <span>🍎</span>
+                    <span>苹果地图</span>
+                </a>
+                <a href="#" class="nav-button google" onclick="openNavigation('google'); return false;">
+                    <span>🌍</span>
+                    <span>谷歌地图</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 配置区域 ====================
+        // 请修改以下配置为您实际的地点信息
+
+        // 地点名称（用于地图搜索）
+        const LOCATION_NAME = "湖州水岸花园大酒店(双林古镇景区店)";
+
+        // ==================== 坐标设置 ====================
+        // 经纬度坐标（建议填写，提升定位精度）
+        // 
+        // 📍 如何获取坐标：
+        // 1. 打开高德地图网页：https://lbs.amap.com/tools/picker
+        // 2. 点击地图上的位置，右侧会显示坐标，格式如：116.397128,39.916527
+        // 3. ⚠️ 注意：高德地图显示的是"经度,纬度"格式
+        //    第一个数字是经度（填到longitude），第二个数字是纬度（填到latitude）
+        // 4. 判断方法：
+        //    - 经度(longitude)：通常是大数字（中国：100-135）
+        //    - 纬度(latitude)：通常是小数字（中国：18-54）
+        //
+        // 或者：如果不设置坐标，也可以只使用地点名称（但定位可能不够精确）
+        // 
+        // 示例坐标：
+        // 北京天安门: longitude: 116.397128, latitude: 39.916527
+        // 上海外滩:   longitude: 121.487899, latitude: 31.239666
+        // 
+        const LOCATION_COORDINATES = {
+            longitude: 120.332731,  // 经度（东经，中国通常为116-124之间）
+            latitude: 30.772340     // 纬度（北纬，中国通常为18-54之间）
+        };
+        //
+        // 如果没有坐标，可以设置为 null（不推荐）：
+        // longitude: null,
+        // latitude: null
+
+        // 请柬图片URL（替换为您自己的图片链接）
+        const INVITATION_IMAGE_URL = "https://via.placeholder.com/600x400/667eea/ffffff?text=活动请柬";
+
+        // 微信分享配置（请修改这些信息）
+        const SHARE_CONFIG = {
+            title: "活动请柬",
+            desc: "欢迎参加我们的活动！",
+            imgUrl: INVITATION_IMAGE_URL  // 分享预览图的URL，建议尺寸：300x300 或更大
+        };
+
+        // ==================== 代码区域（无需修改）====================
+
+        // 坐标验证函数（检查经纬度是否填反）
+        function validateCoordinates() {
+            const lng = LOCATION_COORDINATES.longitude;
+            const lat = LOCATION_COORDINATES.latitude;
+            
+            if (lng && lat) {
+                // 中国经度范围：73-135（东经）
+                // 中国纬度范围：18-54（北纬）
+                // 如果发现坐标可能填反了，给出提示
+                if (lng > 18 && lng < 54 && lat > 73 && lat < 135) {
+                    console.warn('⚠️ 警告：经纬度可能填反了！');
+                    console.warn('   经度(longitude)应该在 73-135 之间（当前：' + lng + '）');
+                    console.warn('   纬度(latitude)应该在 18-54 之间（当前：' + lat + '）');
+                    console.warn('   请检查坐标是否正确！');
+                } else if (lng < 73 || lng > 135) {
+                    console.warn('⚠️ 警告：经度(longitude)值异常！中国经度通常在 73-135 之间，当前值：' + lng);
+                } else if (lat < 18 || lat > 54) {
+                    console.warn('⚠️ 警告：纬度(latitude)值异常！中国纬度通常在 18-54 之间，当前值：' + lat);
+                }
+            }
+        }
+
+        // 初始化图片
+        document.getElementById('invitationImage').src = INVITATION_IMAGE_URL;
+        document.getElementById('locationAddress').textContent = LOCATION_NAME;
+        
+        // 验证坐标
+        validateCoordinates();
+
+        // 更新微信分享的meta标签
+        function updateWeChatShareMeta() {
+            const titleMeta = document.querySelector('meta[property="og:title"]');
+            const descMeta = document.querySelector('meta[property="og:description"]');
+            const imgMeta = document.querySelector('meta[property="og:image"]');
+            const urlMeta = document.querySelector('meta[property="og:url"]');
+
+            if (titleMeta) titleMeta.setAttribute('content', SHARE_CONFIG.title);
+            if (descMeta) descMeta.setAttribute('content', SHARE_CONFIG.desc);
+            if (imgMeta) imgMeta.setAttribute('content', SHARE_CONFIG.imgUrl);
+            if (urlMeta) urlMeta.setAttribute('content', window.location.href);
+
+            // 更新itemprop
+            const itemName = document.querySelector('meta[itemprop="name"]');
+            const itemDesc = document.querySelector('meta[itemprop="description"]');
+            const itemImg = document.querySelector('meta[itemprop="image"]');
+            
+            if (itemName) itemName.setAttribute('content', SHARE_CONFIG.title);
+            if (itemDesc) itemDesc.setAttribute('content', SHARE_CONFIG.desc);
+            if (itemImg) itemImg.setAttribute('content', SHARE_CONFIG.imgUrl);
+            
+            // 更新title
+            document.title = SHARE_CONFIG.title;
+        }
+
+        // 检测是否在微信中打开
+        function isWeChat() {
+            const ua = navigator.userAgent.toLowerCase();
+            return /micromessenger/i.test(ua);
+        }
+
+        // 微信中优化导航按钮点击
+        function optimizeNavigationForWeChat() {
+            const navButtons = document.querySelectorAll('.nav-button');
+            navButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // 微信中点击后可能需要用户手动打开地图应用
+                    if (isWeChat()) {
+                        // 可以添加提示
+                        console.log('微信中打开地图，可能需要跳转到浏览器');
+                    }
+                });
+            });
+        }
+
+        // 导航函数
+        function openNavigation(mapType) {
+            let url = '';
+            let lng = LOCATION_COORDINATES.longitude;
+            let lat = LOCATION_COORDINATES.latitude;
+            const name = encodeURIComponent(LOCATION_NAME);
+            
+            // 自动检测并修复可能的坐标反转问题
+            if (lng && lat) {
+                // 如果经度在纬度范围内（18-54），且纬度在经度范围内（73-135），则交换
+                if (lng >= 18 && lng <= 54 && lat >= 73 && lat <= 135) {
+                    console.warn('自动修复：检测到经纬度可能填反，已自动交换');
+                    const temp = lng;
+                    lng = lat;
+                    lat = temp;
+                }
+            }
+
+            switch(mapType) {
+                case 'amap':
+                    // 高德地图
+                    if (lng && lat) {
+                        // 使用高德地图标记点URI（最可靠的方式，支持网页和APP）
+                        // 格式：https://uri.amap.com/marker?position=经度,纬度&name=名称
+                        url = `https://uri.amap.com/marker?position=${lng},${lat}&name=${encodeURIComponent(name)}`;
+                        
+                        // 如果marker格式不工作，可以尝试以下备用方案：
+                        // 方案1：高德地图网页版搜索（取消下面这行的注释）
+                        // url = `https://ditu.amap.com/search?query=${encodeURIComponent(name)}&city=&geoobj=${lng}%7C${lat}`;
+                        
+                        // 方案2：移动端导航（取消下面这行的注释，如果用户安装了高德APP）
+                        // url = `https://uri.amap.com/navigation?to=${lng},${lat}&toName=${encodeURIComponent(name)}&mode=car&src=mypage`;
+                        
+                        // 调试信息（按F12打开浏览器控制台查看）
+                        console.log('高德地图导航：', {
+                            longitude: lng,
+                            latitude: lat,
+                            name: name,
+                            url: url
+                        });
+                    } else {
+                        // 使用地点名称搜索
+                        url = `https://uri.amap.com/search?query=${encodeURIComponent(name)}`;
+                    }
+                    break;
+
+                case 'baidu':
+                    // 百度地图
+                    if (lng && lat) {
+                        url = `https://api.map.baidu.com/direction?destination=latlng:${lat},${lng}|name:${name}&mode=driving&coord_type=gcj02`;
+                    } else {
+                        url = `https://map.baidu.com/search/${name}/@${lng || 116.397128},${lat || 39.916527},13z`;
+                    }
+                    break;
+
+                case 'tencent':
+                    // 腾讯地图
+                    if (lng && lat) {
+                        url = `https://apis.map.qq.com/uri/v1/route?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${name}`;
+                    } else {
+                        url = `https://map.qq.com/search/${name}`;
+                    }
+                    break;
+
+                case 'apple':
+                    // 苹果地图
+                    if (lng && lat) {
+                        url = `http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`;
+                    } else {
+                        url = `http://maps.apple.com/?q=${name}`;
+                    }
+                    break;
+
+                case 'google':
+                    // 谷歌地图
+                    if (lng && lat) {
+                        url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=${name}`;
+                    } else {
+                        url = `https://www.google.com/maps/search/?api=1&query=${name}`;
+                    }
+                    break;
+            }
+
+            if (url) {
+                window.open(url, '_blank');
+            }
+        }
+
+        // 检测设备类型，自动选择合适的地图
+        function detectDeviceAndSuggestMap() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                // iOS设备，优先显示苹果地图
+                console.log('检测到iOS设备，建议使用苹果地图');
+            } else if (/android/i.test(userAgent)) {
+                // Android设备，优先显示高德或百度
+                console.log('检测到Android设备，建议使用高德或百度地图');
+            }
+        }
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', function() {
+            detectDeviceAndSuggestMap();
+            updateWeChatShareMeta();
+            optimizeNavigationForWeChat();
+            
+            // 如果在微信中，添加提示
+            if (isWeChat()) {
+                console.log('微信中打开，分享功能已优化');
+                // 可以在这里添加微信JS-SDK的初始化（需要申请微信开发者账号）
+            }
+        });
+
+        // 处理图片加载失败
+        document.getElementById('invitationImage').addEventListener('error', function() {
+            console.error('请柬图片加载失败，请检查图片URL是否正确');
+            this.alt = '请柬图片';
+        });
+
+        // 阻止微信中的长按保存图片（可选）
+        if (isWeChat()) {
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+        }
+    </script>
+</body>
+</html>
+
