@@ -376,6 +376,10 @@
                             <span class="map-picker-icon">🍎</span>
                             <span class="map-picker-text">苹果地图</span>
                         </div>
+                        <div class="map-picker-option" onclick="selectMap('google');">
+                            <span class="map-picker-icon">🌍</span>
+                            <span class="map-picker-text">谷歌地图</span>
+                        </div>
                     </div>
                     <div class="map-picker-cancel" onclick="hideMapPicker();">取消</div>
                 </div>
@@ -602,9 +606,12 @@
                 case 'baidu':
                     // 百度地图
                     if (lng && lat) {
-                        url = `https://api.map.baidu.com/direction?destination=latlng:${lat},${lng}|name:${encodeURIComponent(name)}&mode=driving&coord_type=gcj02`;
+                        // 使用百度地图标记点URI（支持网页和APP）
+                        // 格式：https://api.map.baidu.com/marker?location=纬度,经度&title=名称&content=地址
+                        url = `https://api.map.baidu.com/marker?location=${lat},${lng}&title=${encodeURIComponent(name)}&content=${encodeURIComponent(name)}&output=html&src=webapp`;
                     } else {
-                        url = `https://map.baidu.com/search/${encodeURIComponent(name)}/@${lng || 116.397128},${lat || 39.916527},13z`;
+                        // 使用地点名称搜索
+                        url = `https://map.baidu.com/?newmap=1&ie=utf-8&s=s%26wd=${encodeURIComponent(name)}`;
                     }
                     break;
 
@@ -613,11 +620,14 @@
                     if (lng && lat) {
                         // 在微信中，使用微信内置地图（腾讯地图URI）
                         if (isWeChat()) {
-                            url = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${lat},${lng};title:${encodeURIComponent(name)};addr:${encodeURIComponent(name)}`;
+                            // 使用navigation API，支持导航功能，在微信中会自动调用微信内置地图
+                            url = `https://apis.map.qq.com/uri/v1/navigation?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${encodeURIComponent(name)}`;
                         } else {
-                            url = `https://apis.map.qq.com/uri/v1/route?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${encodeURIComponent(name)}`;
+                            // 非微信环境，使用navigation API支持导航（route API已不支持）
+                            url = `https://apis.map.qq.com/uri/v1/navigation?type=drive&to=${lat},${lng}&tocoord=${lat},${lng}&toname=${encodeURIComponent(name)}`;
                         }
                     } else {
+                        // 使用地点名称搜索
                         url = `https://map.qq.com/search/${encodeURIComponent(name)}`;
                     }
                     break;
@@ -625,25 +635,48 @@
                 case 'apple':
                     // 苹果地图
                     if (lng && lat) {
-                        url = `http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`;
+                        // 优先尝试使用maps:// URI scheme（直接打开iOS地图应用）
+                        // 如果失败，会fallback到http://maps.apple.com
+                        // 格式：maps://?ll=纬度,经度&q=名称
+                        url = `maps://?ll=${lat},${lng}&q=${encodeURIComponent(name)}`;
+                        
+                        // 检测是否是iOS设备，如果不是，使用网页版
+                        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                        if (!/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                            // 非iOS设备，使用网页版（但可能被重定向到高德）
+                            url = `http://maps.apple.com/?ll=${lat},${lng}&q=${encodeURIComponent(name)}`;
+                        }
                     } else {
-                        url = `http://maps.apple.com/?q=${encodeURIComponent(name)}`;
+                        // 使用地点名称搜索
+                        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                            url = `maps://?q=${encodeURIComponent(name)}`;
+                        } else {
+                            url = `http://maps.apple.com/?q=${encodeURIComponent(name)}`;
+                        }
                     }
                     break;
 
                 case 'google':
                     // 谷歌地图
                     if (lng && lat) {
-                        url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=${name}`;
+                        // 使用谷歌地图导航API，将中文名称和坐标组合作为destination
+                        // 这样可以确保中文名称正确显示且导航到准确位置
+                        url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(name + ' ' + lat + ',' + lng)}&travelmode=driving`;
                     } else {
-                        url = `https://www.google.com/maps/search/?api=1&query=${name}`;
+                        // 使用地点名称搜索（正确编码中文）
+                        url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`;
                     }
                     break;
             }
 
             if (url) {
-                // 在微信中选择腾讯地图时，使用location.href直接跳转
+                // 特殊处理：某些地图需要使用location.href而不是open
                 if (isWeChat() && mapType === 'tencent') {
+                    // 微信中选择腾讯地图
+                    window.location.href = url;
+                } else if (mapType === 'apple') {
+                    // 苹果地图：使用location.href确保能正确打开原生应用
                     window.location.href = url;
                 } else {
                     window.open(url, '_blank');
