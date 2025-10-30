@@ -12,32 +12,37 @@
     <meta name="description" content="欢迎参加我们的活动！">
     
     <!-- 微信分享 Meta 标签（Open Graph协议，优化为图片分享形式） -->
+    <!-- ⚠️ 重要：微信分享时不会执行JavaScript，必须在HTML中直接设置这些meta标签 -->
+    <!-- 如果修改了分享图片，需要同时更新下面的 og:image 和 itemprop="image" -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="活动请柬">
     <meta property="og:description" content="点击查看">
-    <!-- 注意：图片URL会在页面加载时通过JavaScript自动更新为您设置的分享图片 -->
-    <!-- 为了让分享看起来更像图片，建议使用1:1比例的大尺寸图片（如800x800、1200x1200） -->
+    <!-- 分享图片URL（必须是完整的HTTPS链接，建议1:1比例，最小300x300，推荐800x800像素） -->
     <meta property="og:image" content="https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg">
+    <!-- og:url会在JavaScript中动态更新为当前页面URL -->
     <meta property="og:url" content="">
     <meta property="og:site_name" content="活动请柬">
-    <!-- 图片尺寸提示（推荐正方形，让分享卡片看起来更像图片） -->
-    <!-- 建议实际图片尺寸为：1:1比例，最小500x500，推荐800x800或更大 -->
     <meta property="og:image:type" content="image/jpeg">
+    <!-- 图片尺寸提示（需要与实际图片尺寸匹配） -->
     <meta property="og:image:width" content="800">
     <meta property="og:image:height" content="800">
     
     <!-- 微信特殊标签（优先级更高，微信也会读取这些） -->
-    <!-- 图片URL会在JavaScript中动态更新（使用WECHAT_SHARE_IMAGE_URL配置） -->
     <meta itemprop="name" content="活动请柬">
     <meta itemprop="description" content="点击查看">
     <meta itemprop="image" content="https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg">
     
     <!-- 微信分享专用标签（补充，确保兼容性，使用大图卡片格式） -->
-    <!-- 图片URL会在JavaScript中动态更新（使用WECHAT_SHARE_IMAGE_URL配置） -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="活动请柬">
     <meta name="twitter:description" content="点击查看">
     <meta name="twitter:image" content="https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg">
+    
+    <!-- 微信专用标签（帮助微信更好地抓取图片） -->
+    <meta name="weixin:card" content="summary_large_image">
+    <meta name="weixin:title" content="活动请柬">
+    <meta name="weixin:description" content="点击查看">
+    <meta name="weixin:image" content="https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg">
     
     <!-- 兼容微信浏览器 -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -345,6 +350,11 @@
     </style>
 </head>
 <body>
+    <!-- 隐藏的图片标签（帮助微信抓取分享图片，不使用display:none，而是visibility:hidden） -->
+    <img style="visibility: hidden; height: 0; width: 0; position: absolute;" 
+         src="https://uuumr.github.io/engagement-invitation/invitation_card_low.jpg" 
+         alt="分享图片">
+    
     <div class="container">
         <!-- 请柬图片区域 -->
         <div class="image-container">
@@ -554,6 +564,23 @@
                     imageUrl = imageUrl + separator + '_v=' + new Date().getTime();
                 }
                 itemImg.setAttribute('content', imageUrl);
+            }
+            
+            // 更新微信专用标签
+            const weixinCard = document.querySelector('meta[name="weixin:card"]');
+            const weixinTitle = document.querySelector('meta[name="weixin:title"]');
+            const weixinDesc = document.querySelector('meta[name="weixin:description"]');
+            const weixinImg = document.querySelector('meta[name="weixin:image"]');
+            
+            if (weixinTitle) weixinTitle.setAttribute('content', SHARE_CONFIG.title);
+            if (weixinDesc) weixinDesc.setAttribute('content', SHARE_CONFIG.desc);
+            if (weixinImg) {
+                let imageUrl = SHARE_CONFIG.imgUrl;
+                if (imageUrl && imageUrl.indexOf('http') === 0) {
+                    const separator = imageUrl.indexOf('?') > -1 ? '&' : '?';
+                    imageUrl = imageUrl + separator + '_v=' + new Date().getTime();
+                }
+                weixinImg.setAttribute('content', imageUrl);
             }
             
             // 更新title
