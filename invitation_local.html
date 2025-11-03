@@ -485,23 +485,24 @@
         // ==================== 资源服务器配置 ====================
         // ⭐ 重要：设置资源文件的基础路径
         // 
-        // ⚠️ 注意：GitHub Pages 加载 Gitee 图片可能因跨域问题失败
-        // 解决方案：
-        // 1. 方案A：将图片上传到 GitHub 仓库（推荐，避免跨域问题）
-        // 2. 方案B：使用 GitHub Pages 路径（如果图片在 GitHub）
-        // 3. 方案C：使用 Gitee 路径（可能有跨域限制）
+        // ⚠️ 腾讯云COS静态网站使用说明：
+        // 1. 确保所有文件（HTML和图片）上传到COS的同一目录
+        // 2. 使用相对路径最简单，避免Content-Type问题
+        // 3. 如果使用完整路径，确保静态网站已启用并正确配置Content-Type
         //
-        // 当前使用 Gitee 路径（可能因跨域问题无法加载）：
-        const BASE_URL = "https://gitee.com/shenxiaofan/invitation/raw/master/";
+        // 推荐：使用相对路径（最简单，最稳定）
+        //const BASE_URL = "";
+        const BASE_URL = "https://1129-1385230634.cos.ap-guangzhou.myqcloud.com/"
         //
-        // 如果图片在 GitHub 仓库（与 HTML 同一仓库），使用相对路径（推荐）：
-        // const BASE_URL = "";
-        // 
-        // 或者使用 GitHub Pages 完整路径：
-        // const BASE_URL = "https://uuumr.github.io/engagement-invitation/";
+        // 如果需要使用完整路径（静态网站访问节点）：
+        // const BASE_URL = "https://1129-1385230634.cos-website.ap-guangzhou.myqcloud.com/";
         //
-        // 备用路径（如果 Gitee 加载失败，会尝试使用）：
-        const FALLBACK_BASE_URL = "https://uuumr.github.io/engagement-invitation/";
+        // 如果使用 Gitee 路径：
+        // const BASE_URL = "https://gitee.com/shenxiaofan/invitation/raw/master/";
+        //
+        // 备用路径（如果主路径加载失败，会尝试使用）：
+        //const FALLBACK_BASE_URL = "https://gitee.com/shenxiaofan/invitation/raw/master/";
+        const FALLBACK_BASE_URL = "https://1129-1385230634.cos.ap-guangzhou.myqcloud.com/";
         // ========================================================================
 
         // 地点名称（用于地图搜索）
