@@ -21,11 +21,13 @@
     <!-- 注意：这里的值会在JavaScript中自动更新为 WECHAT_SHARE_IMAGE_URL 的值 -->
     <!-- ⚠️ 如果微信仍显示旧图片，说明被缓存了，需要在图片URL后加版本参数（如：?v=10）强制刷新 -->
     <!-- 如果还是显示旧图，请将版本号改为更大的数字，如 ?v=11, ?v=12 等 -->
-    <meta property="og:image" content="https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png?v=10">
+    <!-- ⚠️ 注意：此URL会在JavaScript中自动更新 -->
+    <meta property="og:image" content="">
     <!-- ⚠️ og:url：请替换为您部署后的完整链接（例如：https://您的用户名.github.io/仓库名/invitation.html） -->
     <!-- 注意：微信分享时不会执行JavaScript，所以必须在这里直接设置完整的URL -->
     <!-- 添加版本参数?v=10强制微信重新抓取分享信息，如果还不行可以改为?v=11、?v=12等 -->
-    <meta property="og:url" content="https://uuumr.github.io/engagement-invitation/invitation.html?v=10">
+    <!-- ⚠️ 注意：此URL会在JavaScript中自动更新 -->
+    <meta property="og:url" content="https://uuumr.github.io/engagement-invitation/invitation_local.html">
     <meta property="og:site_name" content="活动请柬">
     <meta property="og:image:type" content="image/png">
     <!-- 图片尺寸提示（需要与实际图片尺寸匹配） -->
@@ -35,19 +37,22 @@
     <!-- 微信特殊标签（优先级更高，微信也会读取这些） -->
     <meta itemprop="name" content="活动请柬">
     <meta itemprop="description" content="点击查看">
-    <meta itemprop="image" content="https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png?v=10">
+    <!-- ⚠️ 注意：此URL会在JavaScript中自动更新 -->
+    <meta itemprop="image" content="">
     
     <!-- 微信分享专用标签（补充，确保兼容性，使用大图卡片格式） -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="活动请柬">
     <meta name="twitter:description" content="点击查看">
-    <meta name="twitter:image" content="https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png?v=10">
+    <!-- ⚠️ 注意：此URL会在JavaScript中自动更新 -->
+    <meta name="twitter:image" content="">
     
     <!-- 微信专用标签（帮助微信更好地抓取图片） -->
     <meta name="weixin:card" content="summary_large_image">
     <meta name="weixin:title" content="活动请柬">
     <meta name="weixin:description" content="点击查看">
-    <meta name="weixin:image" content="https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png?v=10">
+    <!-- ⚠️ 注意：此URL会在JavaScript中自动更新 -->
+    <meta name="weixin:image" content="">
     
     <!-- 兼容微信浏览器 -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -394,7 +399,8 @@
     <!-- 注意：这里的src会在JavaScript中自动更新为 WECHAT_SHARE_IMAGE_URL 的值 -->
     <!-- ⚠️ 添加版本参数?v=10强制微信重新抓取，如果还不行可以改为?v=11、?v=12等 -->
     <img style="visibility: hidden; height: 0; width: 0; position: absolute;" 
-         src="https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png?v=10" 
+         src=""
+         id="hiddenShareImg" 
          alt="分享图片">
     
     <div class="container">
@@ -415,10 +421,9 @@
             </p>
             
             <!-- 可点击的地图图片 -->
-            <img src="https://gitee.com/shenxiaofan/invitation/raw/master/hotel_map.png" 
+            <img src="" id="hotelMapImg" 
                  alt="酒店位置地图" 
                  class="location-map-image"
-                 id="locationMapImage"
                  onclick="showMapPicker(); return false;"
                  title="点击查看地图位置">
             
@@ -477,6 +482,28 @@
         // ==================== 配置区域 ====================
         // 请修改以下配置为您实际的地点信息
 
+        // ==================== 资源服务器配置 ====================
+        // ⭐ 重要：设置资源文件的基础路径
+        // 
+        // ⚠️ 注意：GitHub Pages 加载 Gitee 图片可能因跨域问题失败
+        // 解决方案：
+        // 1. 方案A：将图片上传到 GitHub 仓库（推荐，避免跨域问题）
+        // 2. 方案B：使用 GitHub Pages 路径（如果图片在 GitHub）
+        // 3. 方案C：使用 Gitee 路径（可能有跨域限制）
+        //
+        // 当前使用 Gitee 路径（可能因跨域问题无法加载）：
+        const BASE_URL = "https://gitee.com/shenxiaofan/invitation/raw/master/";
+        //
+        // 如果图片在 GitHub 仓库（与 HTML 同一仓库），使用相对路径（推荐）：
+        // const BASE_URL = "";
+        // 
+        // 或者使用 GitHub Pages 完整路径：
+        // const BASE_URL = "https://uuumr.github.io/engagement-invitation/";
+        //
+        // 备用路径（如果 Gitee 加载失败，会尝试使用）：
+        const FALLBACK_BASE_URL = "https://uuumr.github.io/engagement-invitation/";
+        // ========================================================================
+
         // 地点名称（用于地图搜索）
         const LOCATION_NAME = "湖州水岸花园大酒店(双林古镇景区店)";
 
@@ -507,8 +534,8 @@
         // longitude: null,
         // latitude: null
 
-        // 请柬图片URL（替换为您自己的图片链接，这是网页中显示的图片）
-        const INVITATION_IMAGE_URL = "https://gitee.com/shenxiaofan/invitation/raw/master/invitation_card_low.jpg";
+        // 请柬图片URL（使用BASE_URL统一配置）
+        const INVITATION_IMAGE_URL = BASE_URL + "invitation_card_low.jpg";
 
         // ==================== 微信分享图片配置（可以独立设置） ====================
         // ⭐ 重要：这里是分享到微信时显示的图片URL，可以与上面的请柬图片不同
@@ -524,7 +551,7 @@
         // - 图片内容建议包含所有重要信息（时间、地点、主题等），因为描述会被最小化
         // - 图片必须可以直接访问，支持跨域
         //
-        const WECHAT_SHARE_IMAGE_URL = "https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png";
+        const WECHAT_SHARE_IMAGE_URL = BASE_URL + "share_cover.png";
         // 如果不想单独设置，可以使用请柬图片：const WECHAT_SHARE_IMAGE_URL = INVITATION_IMAGE_URL;
         // 或者设置为 null 自动使用请柬图片：const WECHAT_SHARE_IMAGE_URL = null;
         // ========================================================================
@@ -560,8 +587,52 @@
             }
         }
 
-        // 初始化图片
-        document.getElementById('invitationImage').src = INVITATION_IMAGE_URL;
+        // 图片加载失败处理函数（处理跨域问题）
+        function loadImageWithFallback(imgElement, imageUrl, fallbackUrl) {
+            if (!imgElement || !imageUrl) return;
+            
+            const img = new Image();
+            
+            // 尝试加载主图片
+            img.onload = function() {
+                imgElement.src = imageUrl;
+            };
+            
+            // 如果加载失败，尝试备用路径
+            img.onerror = function() {
+                console.warn('图片加载失败，尝试备用路径：', imageUrl);
+                if (fallbackUrl) {
+                    const fallbackImg = new Image();
+                    fallbackImg.onload = function() {
+                        imgElement.src = fallbackUrl;
+                    };
+                    fallbackImg.onerror = function() {
+                        console.error('备用图片路径也加载失败：', fallbackUrl);
+                    };
+                    fallbackImg.src = fallbackUrl;
+                }
+            };
+            
+            img.src = imageUrl;
+        }
+
+        // 初始化图片（带失败重试机制）
+        const invitationImg = document.getElementById('invitationImage');
+        const hotelMapImg = document.getElementById('hotelMapImg');
+        const hiddenShareImg = document.getElementById('hiddenShareImg');
+        
+        loadImageWithFallback(invitationImg, INVITATION_IMAGE_URL, 
+            FALLBACK_BASE_URL ? FALLBACK_BASE_URL + "invitation_card_low.jpg" : null);
+        
+        loadImageWithFallback(hotelMapImg, BASE_URL + "hotel_map.png", 
+            FALLBACK_BASE_URL ? FALLBACK_BASE_URL + "hotel_map.png" : null);
+        
+        if (hiddenShareImg) {
+            const shareImgUrl = WECHAT_SHARE_IMAGE_URL || INVITATION_IMAGE_URL;
+            loadImageWithFallback(hiddenShareImg, shareImgUrl, 
+                FALLBACK_BASE_URL ? FALLBACK_BASE_URL + "share_cover.png" : null);
+        }
+        
         document.getElementById('locationAddress').textContent = LOCATION_NAME;
         
         // 验证坐标
@@ -580,6 +651,12 @@
                 // 确保图片URL是完整的HTTPS链接（微信要求必须使用HTTPS）
                 // 添加时间戳参数防止缓存，确保分享时显示最新图片
                 let imageUrl = SHARE_CONFIG.imgUrl;
+                // 如果是相对路径，转换为完整URL
+                if (imageUrl && imageUrl.indexOf('http') !== 0) {
+                    // 相对路径，使用当前域名构建完整URL
+                    const baseUrl = window.location.protocol + '//' + window.location.host;
+                    imageUrl = baseUrl + (imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl);
+                }
                 if (imageUrl && imageUrl.indexOf('http') === 0) {
                     // 已经是完整URL，添加版本号防止缓存
                     const separator = imageUrl.indexOf('?') > -1 ? '&' : '?';
@@ -601,6 +678,11 @@
             if (itemDesc) itemDesc.setAttribute('content', SHARE_CONFIG.desc);
             if (itemImg) {
                 let imageUrl = SHARE_CONFIG.imgUrl;
+                // 如果是相对路径，转换为完整URL
+                if (imageUrl && imageUrl.indexOf('http') !== 0) {
+                    const baseUrl = window.location.protocol + '//' + window.location.host;
+                    imageUrl = baseUrl + (imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl);
+                }
                 if (imageUrl && imageUrl.indexOf('http') === 0) {
                     const separator = imageUrl.indexOf('?') > -1 ? '&' : '?';
                     imageUrl = imageUrl + separator + '_v=' + new Date().getTime();
@@ -618,6 +700,11 @@
             if (weixinDesc) weixinDesc.setAttribute('content', SHARE_CONFIG.desc);
             if (weixinImg) {
                 let imageUrl = SHARE_CONFIG.imgUrl;
+                // 如果是相对路径，转换为完整URL
+                if (imageUrl && imageUrl.indexOf('http') !== 0) {
+                    const baseUrl = window.location.protocol + '//' + window.location.host;
+                    imageUrl = baseUrl + (imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl);
+                }
                 if (imageUrl && imageUrl.indexOf('http') === 0) {
                     const separator = imageUrl.indexOf('?') > -1 ? '&' : '?';
                     imageUrl = imageUrl + separator + '_v=' + new Date().getTime();
