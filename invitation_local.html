@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <!-- 基础信息 -->
+    <title>活动请柬</title>
+    <meta name="description" content="欢迎参加我们的订婚仪式！">
+    
+    <!-- 微信分享 Meta 标签（Open Graph协议，优化为图片分享形式） -->
+    <!-- ⚠️ 重要：微信分享时不会执行JavaScript，必须在HTML中直接设置这些meta标签 -->
+    <!-- 如果修改了分享图片，需要同时更新下面的 og:image 和 itemprop="image" -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="活动请柬">
+    <meta property="og:description" content="点击查看">
+    <!-- 分享图片URL（必须是完整的HTTPS链接，建议1:1比例，最小300x300，推荐800x800像素，文件大小建议小于300KB） -->
+    <!-- 注意：这里的值会在JavaScript中自动更新为 WECHAT_SHARE_IMAGE_URL 的值 -->
+    <!-- ⚠️ 如果微信仍显示旧图片，说明被缓存了，需要在图片URL后加版本参数（如：?v=10）强制刷新 -->
+    <!-- 如果还是显示旧图，请将版本号改为更大的数字，如 ?v=11, ?v=12 等 -->
+    <meta property="og:image" content="https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png?v=10">
+    <!-- ⚠️ og:url：请替换为您部署后的完整链接（例如：https://您的用户名.github.io/仓库名/invitation.html） -->
+    <!-- 注意：微信分享时不会执行JavaScript，所以必须在这里直接设置完整的URL -->
+    <!-- 添加版本参数?v=10强制微信重新抓取分享信息，如果还不行可以改为?v=11、?v=12等 -->
+    <meta property="og:url" content="https://uuumr.github.io/engagement-invitation/invitation.html?v=10">
+    <meta property="og:site_name" content="活动请柬">
+    <meta property="og:image:type" content="image/png">
+    <!-- 图片尺寸提示（需要与实际图片尺寸匹配） -->
+    <meta property="og:image:width" content="800">
+    <meta property="og:image:height" content="800">
+    
+    <!-- 微信特殊标签（优先级更高，微信也会读取这些） -->
+    <meta itemprop="name" content="活动请柬">
+    <meta itemprop="description" content="点击查看">
+    <meta itemprop="image" content="https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png?v=10">
+    
+    <!-- 微信分享专用标签（补充，确保兼容性，使用大图卡片格式） -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="活动请柬">
+    <meta name="twitter:description" content="点击查看">
+    <meta name="twitter:image" content="https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png?v=10">
+    
+    <!-- 微信专用标签（帮助微信更好地抓取图片） -->
+    <meta name="weixin:card" content="summary_large_image">
+    <meta name="weixin:title" content="活动请柬">
+    <meta name="weixin:description" content="点击查看">
+    <meta name="weixin:image" content="https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png?v=10">
+    
+    <!-- 兼容微信浏览器 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- 微信JS-SDK（用于调用微信内置地图和分享功能） -->
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+            /* 防止微信中下拉出现背景 */
+            overscroll-behavior-y: none;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .image-container {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 装饰图片（绝对定位，覆盖在请柬图片上） */
+        .decoration-image {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .decoration-image-left {
+            left: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .decoration-image-right {
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .invitation-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            image-rendering: -webkit-optimize-contrast;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .location-section {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .location-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .location-address {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        /* 地图图片样式 */
+        .location-map-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 20px 0;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .location-map-image:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .location-map-image:active {
+            transform: translateY(0);
+        }
+
+        /* 地图选择弹窗样式 */
+        .map-picker-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            animation: fadeInOverlay 0.3s ease;
+        }
+
+        .map-picker-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeInOverlay {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .map-picker-sheet {
+            background: white;
+            border-radius: 16px 16px 0 0;
+            width: 100%;
+            max-width: 600px;
+            padding-bottom: env(safe-area-inset-bottom);
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .map-picker-handle {
+            width: 36px;
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            margin: 12px auto;
+        }
+
+        .map-picker-options {
+            padding: 8px 0;
+        }
+
+        .map-picker-option {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .map-picker-option:active {
+            background-color: #f5f5f5;
+        }
+
+        .map-picker-option:last-child {
+            border-bottom: none;
+        }
+
+        .map-picker-icon {
+            font-size: 24px;
+            margin-right: 12px;
+            width: 32px;
+            text-align: center;
+        }
+
+        .map-picker-text {
+            font-size: 17px;
+            color: #333;
+            flex: 1;
+        }
+
+        .map-picker-cancel {
+            margin: 8px 16px 16px;
+            padding: 16px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 17px;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .map-picker-cancel:active {
+            background-color: #e5e5e5;
+        }
+
+        .nav-buttons {
+            display: none; /* 隐藏导航按钮 */
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .nav-button {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-button:active {
+            transform: translateY(0);
+        }
+
+        .amap {
+            background: linear-gradient(135deg, #0091ff 0%, #0066cc 100%);
+        }
+
+        .baidu {
+            background: linear-gradient(135deg, #3385ff 0%, #1a6fd8 100%);
+        }
+
+        .tencent {
+            background: linear-gradient(135deg, #0ba58c 0%, #088a75 100%);
+        }
+
+        .apple {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+        }
+
+        .google {
+            background: linear-gradient(135deg, #4285f4 0%, #1976d2 100%);
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        /* 微信浏览器优化 */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                border-radius: 15px;
+            }
+
+            .decoration-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .decoration-image-left {
+                left: 3%;
+            }
+
+            .decoration-image-right {
+                right: 3%;
+            }
+
+            .location-section {
+                padding: 20px 15px;
+            }
+
+            .nav-button {
+                min-width: 100%;
+                padding: 16px 20px;
+                font-size: 17px;
+            }
+
+            .location-title {
+                font-size: 20px;
+                margin-bottom: 12px;
+            }
+
+            .location-address {
+                font-size: 15px;
+                margin-bottom: 20px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 隐藏的图片标签（帮助微信抓取分享图片，不使用display:none，而是visibility:hidden） -->
+    <!-- 注意：这里的src会在JavaScript中自动更新为 WECHAT_SHARE_IMAGE_URL 的值 -->
+    <!-- ⚠️ 添加版本参数?v=10强制微信重新抓取，如果还不行可以改为?v=11、?v=12等 -->
+    <img style="visibility: hidden; height: 0; width: 0; position: absolute;" 
+         src="https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png?v=10" 
+         alt="分享图片">
+    
+    <div class="container">
+        <!-- 请柬图片区域 -->
+        <div class="image-container">
+            <!-- 请柬主图片 -->
+            <img src="https://via.placeholder.com/600x400/667eea/ffffff?text=活动请柬" 
+                 alt="活动请柬" 
+                 class="invitation-image"
+                 id="invitationImage">
+        </div>
+
+        <!-- 导航区域 -->
+        <div class="location-section">
+            <h2 class="location-title">📍 活动地点</h2>
+            <p class="location-address" id="locationAddress">
+                北京市朝阳区XX路XX号XX大厦
+            </p>
+            
+            <!-- 可点击的地图图片 -->
+            <img src="https://gitee.com/shenxiaofan/invitation/raw/master/hotel_map.png" 
+                 alt="酒店位置地图" 
+                 class="location-map-image"
+                 id="locationMapImage"
+                 onclick="showMapPicker(); return false;"
+                 title="点击查看地图位置">
+            
+            <!-- 地图选择弹窗 -->
+            <div class="map-picker-overlay" id="mapPickerOverlay" onclick="hideMapPicker();">
+                <div class="map-picker-sheet" onclick="event.stopPropagation();">
+                    <div class="map-picker-handle"></div>
+                    <div class="map-picker-options">
+                        <div class="map-picker-option" onclick="selectMap('tencent');">
+                            <span class="map-picker-icon">🧭</span>
+                            <span class="map-picker-text">腾讯地图</span>
+                        </div>
+                        <div class="map-picker-option" onclick="selectMap('amap');">
+                            <span class="map-picker-icon">🗺️</span>
+                            <span class="map-picker-text">高德地图</span>
+                        </div>
+                        <div class="map-picker-option" onclick="selectMap('baidu');">
+                            <span class="map-picker-icon">📍</span>
+                            <span class="map-picker-text">百度地图</span>
+                        </div>
+                        <div class="map-picker-option" onclick="selectMap('google');">
+                            <span class="map-picker-icon">🌍</span>
+                            <span class="map-picker-text">谷歌地图</span>
+                        </div>
+                    </div>
+                    <div class="map-picker-cancel" onclick="hideMapPicker();">取消</div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <a href="#" class="nav-button amap" onclick="openNavigation('amap'); return false;">
+                    <span>🗺️</span>
+                    <span>高德地图</span>
+                </a>
+                <a href="#" class="nav-button baidu" onclick="openNavigation('baidu'); return false;">
+                    <span>📍</span>
+                    <span>百度地图</span>
+                </a>
+                <a href="#" class="nav-button tencent" onclick="openNavigation('tencent'); return false;">
+                    <span>🧭</span>
+                    <span>腾讯地图</span>
+                </a>
+                <a href="#" class="nav-button apple" onclick="openNavigation('apple'); return false;">
+                    <span>🍎</span>
+                    <span>苹果地图</span>
+                </a>
+                <a href="#" class="nav-button google" onclick="openNavigation('google'); return false;">
+                    <span>🌍</span>
+                    <span>谷歌地图</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 配置区域 ====================
+        // 请修改以下配置为您实际的地点信息
+
+        // 地点名称（用于地图搜索）
+        const LOCATION_NAME = "湖州水岸花园大酒店(双林古镇景区店)";
+
+        // ==================== 坐标设置 ====================
+        // 经纬度坐标（建议填写，提升定位精度）
+        // 
+        // 📍 如何获取坐标：
+        // 1. 打开高德地图网页：https://lbs.amap.com/tools/picker
+        // 2. 点击地图上的位置，右侧会显示坐标，格式如：116.397128,39.916527
+        // 3. ⚠️ 注意：高德地图显示的是"经度,纬度"格式
+        //    第一个数字是经度（填到longitude），第二个数字是纬度（填到latitude）
+        // 4. 判断方法：
+        //    - 经度(longitude)：通常是大数字（中国：100-135）
+        //    - 纬度(latitude)：通常是小数字（中国：18-54）
+        //
+        // 或者：如果不设置坐标，也可以只使用地点名称（但定位可能不够精确）
+        // 
+        // 示例坐标：
+        // 北京天安门: longitude: 116.397128, latitude: 39.916527
+        // 上海外滩:   longitude: 121.487899, latitude: 31.239666
+        // 
+        const LOCATION_COORDINATES = {
+            longitude: 120.332731,  // 经度（东经，中国通常为116-124之间）
+            latitude: 30.772340     // 纬度（北纬，中国通常为18-54之间）
+        };
+        //
+        // 如果没有坐标，可以设置为 null（不推荐）：
+        // longitude: null,
+        // latitude: null
+
+        // 请柬图片URL（替换为您自己的图片链接，这是网页中显示的图片）
+        const INVITATION_IMAGE_URL = "https://gitee.com/shenxiaofan/invitation/raw/master/invitation_card_low.jpg";
+
+        // ==================== 微信分享图片配置（可以独立设置） ====================
+        // ⭐ 重要：这里是分享到微信时显示的图片URL，可以与上面的请柬图片不同
+        // 
+        // 使用方法：
+        // 1. 将您的分享图片上传到服务器（或使用图床），获得HTTPS链接
+        // 2. 将链接填写到下面的 WECHAT_SHARE_IMAGE_URL
+        // 3. 如果不想单独设置分享图片，可以留空或设置为 null，将自动使用上面的请柬图片
+        //
+        // 📸 图片要求：
+        // - 必须是完整的HTTPS链接（不能是相对路径）
+        // - 建议尺寸：1:1比例（正方形），例如600x600、800x800、1200x1200像素
+        // - 图片内容建议包含所有重要信息（时间、地点、主题等），因为描述会被最小化
+        // - 图片必须可以直接访问，支持跨域
+        //
+        const WECHAT_SHARE_IMAGE_URL = "https://gitee.com/shenxiaofan/invitation/raw/master/share_cover.png";
+        // 如果不想单独设置，可以使用请柬图片：const WECHAT_SHARE_IMAGE_URL = INVITATION_IMAGE_URL;
+        // 或者设置为 null 自动使用请柬图片：const WECHAT_SHARE_IMAGE_URL = null;
+        // ========================================================================
+
+        // 微信分享配置（优化为图片分享形式：分享时以大图显示，点击后打开请柬链接）
+        const SHARE_CONFIG = {
+            title: "活动请柬",  // 分享时显示的标题（保持简短，图片是主要展示内容）
+            desc: "点击查看",    // 分享时显示的描述（已简化，突出图片视觉效果）
+            imgUrl: WECHAT_SHARE_IMAGE_URL || INVITATION_IMAGE_URL  // 分享预览图的URL（优先使用WECHAT_SHARE_IMAGE_URL）
+        };
+
+        // ==================== 代码区域（无需修改）====================
+
+        // 坐标验证函数（检查经纬度是否填反）
+        function validateCoordinates() {
+            const lng = LOCATION_COORDINATES.longitude;
+            const lat = LOCATION_COORDINATES.latitude;
+            
+            if (lng && lat) {
+                // 中国经度范围：73-135（东经）
+                // 中国纬度范围：18-54（北纬）
+                // 如果发现坐标可能填反了，给出提示
+                if (lng > 18 && lng < 54 && lat > 73 && lat < 135) {
+                    console.warn('⚠️ 警告：经纬度可能填反了！');
+                    console.warn('   经度(longitude)应该在 73-135 之间（当前：' + lng + '）');
+                    console.warn('   纬度(latitude)应该在 18-54 之间（当前：' + lat + '）');
+                    console.warn('   请检查坐标是否正确！');
+                } else if (lng < 73 || lng > 135) {
+                    console.warn('⚠️ 警告：经度(longitude)值异常！中国经度通常在 73-135 之间，当前值：' + lng);
+                } else if (lat < 18 || lat > 54) {
+                    console.warn('⚠️ 警告：纬度(latitude)值异常！中国纬度通常在 18-54 之间，当前值：' + lat);
+                }
+            }
+        }
+
+        // 初始化图片
+        document.getElementById('invitationImage').src = INVITATION_IMAGE_URL;
+        document.getElementById('locationAddress').textContent = LOCATION_NAME;
+        
+        // 验证坐标
+        validateCoordinates();
+
+        // 更新微信分享的meta标签
+        function updateWeChatShareMeta() {
+            const titleMeta = document.querySelector('meta[property="og:title"]');
+            const descMeta = document.querySelector('meta[property="og:description"]');
+            const imgMeta = document.querySelector('meta[property="og:image"]');
+            const urlMeta = document.querySelector('meta[property="og:url"]');
+
+            if (titleMeta) titleMeta.setAttribute('content', SHARE_CONFIG.title);
+            if (descMeta) descMeta.setAttribute('content', SHARE_CONFIG.desc);
+            if (imgMeta) {
+                // 确保图片URL是完整的HTTPS链接（微信要求必须使用HTTPS）
+                // 添加时间戳参数防止缓存，确保分享时显示最新图片
+                let imageUrl = SHARE_CONFIG.imgUrl;
+                if (imageUrl && imageUrl.indexOf('http') === 0) {
+                    // 已经是完整URL，添加版本号防止缓存
+                    const separator = imageUrl.indexOf('?') > -1 ? '&' : '?';
+                    imageUrl = imageUrl + separator + '_v=' + new Date().getTime();
+                }
+                imgMeta.setAttribute('content', imageUrl);
+            }
+            if (urlMeta) {
+                const currentUrl = window.location.href || window.location.protocol + '//' + window.location.host + window.location.pathname;
+                urlMeta.setAttribute('content', currentUrl);
+            }
+
+            // 更新itemprop（微信也会读取这些标签）
+            const itemName = document.querySelector('meta[itemprop="name"]');
+            const itemDesc = document.querySelector('meta[itemprop="description"]');
+            const itemImg = document.querySelector('meta[itemprop="image"]');
+            
+            if (itemName) itemName.setAttribute('content', SHARE_CONFIG.title);
+            if (itemDesc) itemDesc.setAttribute('content', SHARE_CONFIG.desc);
+            if (itemImg) {
+                let imageUrl = SHARE_CONFIG.imgUrl;
+                if (imageUrl && imageUrl.indexOf('http') === 0) {
+                    const separator = imageUrl.indexOf('?') > -1 ? '&' : '?';
+                    imageUrl = imageUrl + separator + '_v=' + new Date().getTime();
+                }
+                itemImg.setAttribute('content', imageUrl);
+            }
+            
+            // 更新微信专用标签
+            const weixinCard = document.querySelector('meta[name="weixin:card"]');
+            const weixinTitle = document.querySelector('meta[name="weixin:title"]');
+            const weixinDesc = document.querySelector('meta[name="weixin:description"]');
+            const weixinImg = document.querySelector('meta[name="weixin:image"]');
+            
+            if (weixinTitle) weixinTitle.setAttribute('content', SHARE_CONFIG.title);
+            if (weixinDesc) weixinDesc.setAttribute('content', SHARE_CONFIG.desc);
+            if (weixinImg) {
+                let imageUrl = SHARE_CONFIG.imgUrl;
+                if (imageUrl && imageUrl.indexOf('http') === 0) {
+                    const separator = imageUrl.indexOf('?') > -1 ? '&' : '?';
+                    imageUrl = imageUrl + separator + '_v=' + new Date().getTime();
+                }
+                weixinImg.setAttribute('content', imageUrl);
+            }
+            
+            // 更新title
+            document.title = SHARE_CONFIG.title;
+            
+            // 输出调试信息（按F12打开控制台查看）
+            console.log('✅ 微信分享配置已更新：', {
+                title: SHARE_CONFIG.title,
+                desc: SHARE_CONFIG.desc,
+                imgUrl: SHARE_CONFIG.imgUrl,
+                currentUrl: window.location.href
+            });
+        }
+
+        // 检测是否在微信中打开
+        function isWeChat() {
+            const ua = navigator.userAgent.toLowerCase();
+            return /micromessenger/i.test(ua);
+        }
+
+        // 微信中优化导航按钮点击
+        function optimizeNavigationForWeChat() {
+            const navButtons = document.querySelectorAll('.nav-button');
+            navButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // 微信中点击后可能需要用户手动打开地图应用
+                    if (isWeChat()) {
+                        // 可以添加提示
+                        console.log('微信中打开地图，可能需要跳转到浏览器');
+                    }
+                });
+            });
+        }
+
+        // 显示地图选择器
+        function showMapPicker() {
+            const overlay = document.getElementById('mapPickerOverlay');
+            if (overlay) {
+                overlay.classList.add('show');
+                // 防止背景滚动
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // 隐藏地图选择器
+        function hideMapPicker() {
+            const overlay = document.getElementById('mapPickerOverlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+                // 恢复背景滚动
+                document.body.style.overflow = '';
+            }
+        }
+
+        // 选择地图并打开
+        function selectMap(mapType) {
+            hideMapPicker();
+            openNavigation(mapType);
+        }
+
+        // 导航函数
+        function openNavigation(mapType) {
+            let url = '';
+            let lng = LOCATION_COORDINATES.longitude;
+            let lat = LOCATION_COORDINATES.latitude;
+            const name = LOCATION_NAME;  // 使用原始名称，不在这里编码
+            
+            // 自动检测并修复可能的坐标反转问题
+            if (lng && lat) {
+                // 如果经度在纬度范围内（18-54），且纬度在经度范围内（73-135），则交换
+                if (lng >= 18 && lng <= 54 && lat >= 73 && lat <= 135) {
+                    console.warn('自动修复：检测到经纬度可能填反，已自动交换');
+                    const temp = lng;
+                    lng = lat;
+                    lat = temp;
+                }
+            }
+
+            switch(mapType) {
+                case 'amap':
+                    // 高德地图
+                    if (lng && lat) {
+                        // 使用高德地图标记点URI（最可靠的方式，支持网页和APP）
+                        // 格式：https://uri.amap.com/marker?position=经度,纬度&name=名称
+                        // 注意：name参数需要URL编码
+                        url = `https://uri.amap.com/marker?position=${lng},${lat}&name=${encodeURIComponent(name)}`;
+                        
+                        // 如果marker格式不工作，可以尝试以下备用方案：
+                        // 方案1：高德地图网页版搜索（取消下面这行的注释）
+                        // url = `https://ditu.amap.com/search?query=${encodeURIComponent(name)}&city=&geoobj=${lng}%7C${lat}`;
+                        
+                        // 方案2：移动端导航（取消下面这行的注释，如果用户安装了高德APP）
+                        // url = `https://uri.amap.com/navigation?to=${lng},${lat}&toName=${encodeURIComponent(name)}&mode=car&src=mypage`;
+                        
+                        // 调试信息（按F12打开浏览器控制台查看）
+                        console.log('高德地图导航：', {
+                            longitude: lng,
+                            latitude: lat,
+                            name: name,
+                            url: url
+                        });
+                    } else {
+                        // 使用地点名称搜索
+                        url = `https://uri.amap.com/search?query=${encodeURIComponent(name)}`;
+                    }
+                    break;
+
+                case 'baidu':
+                    // 百度地图
+                    if (lng && lat) {
+                        // 使用百度地图标记点URI（支持网页和APP）
+                        // 格式：https://api.map.baidu.com/marker?location=纬度,经度&title=名称&content=地址
+                        url = `https://api.map.baidu.com/marker?location=${lat},${lng}&title=${encodeURIComponent(name)}&content=${encodeURIComponent(name)}&output=html&src=webapp`;
+                    } else {
+                        // 使用地点名称搜索
+                        url = `https://map.baidu.com/?newmap=1&ie=utf-8&s=s%26wd=${encodeURIComponent(name)}`;
+                    }
+                    break;
+
+                case 'tencent':
+                    // 腾讯地图
+                    if (lng && lat) {
+                        // 使用marker API（统一使用，支持微信和非微信环境）
+                        // marker API会显示标记点，用户可以点击标记点上的导航按钮进行导航
+                        // 在微信中会自动调用微信内置地图
+                        url = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${lat},${lng};title:${encodeURIComponent(name)};addr:${encodeURIComponent(name)}`;
+                    } else {
+                        // 使用地点名称搜索
+                        url = `https://map.qq.com/search/${encodeURIComponent(name)}`;
+                    }
+                    break;
+
+                case 'apple':
+                    // 苹果地图
+                    if (lng && lat) {
+                        // 优先尝试使用maps:// URI scheme（直接打开iOS地图应用）
+                        // 如果失败，会fallback到http://maps.apple.com
+                        // 格式：maps://?ll=纬度,经度&q=名称
+                        url = `maps://?ll=${lat},${lng}&q=${encodeURIComponent(name)}`;
+                        
+                        // 检测是否是iOS设备，如果不是，使用网页版
+                        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                        if (!/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                            // 非iOS设备，使用网页版（但可能被重定向到高德）
+                            url = `http://maps.apple.com/?ll=${lat},${lng}&q=${encodeURIComponent(name)}`;
+                        }
+                    } else {
+                        // 使用地点名称搜索
+                        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                            url = `maps://?q=${encodeURIComponent(name)}`;
+                        } else {
+                            url = `http://maps.apple.com/?q=${encodeURIComponent(name)}`;
+                        }
+                    }
+                    break;
+
+                case 'google':
+                    // 谷歌地图
+                    if (lng && lat) {
+                        // 使用谷歌地图导航API，将中文名称和坐标组合作为destination
+                        // 这样可以确保中文名称正确显示且导航到准确位置
+                        url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(name + ' ' + lat + ',' + lng)}&travelmode=driving`;
+                    } else {
+                        // 使用地点名称搜索（正确编码中文）
+                        url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`;
+                    }
+                    break;
+            }
+
+            if (url) {
+                // 特殊处理：某些地图需要使用location.href而不是open
+                if (isWeChat() && mapType === 'tencent') {
+                    // 微信中选择腾讯地图
+                    window.location.href = url;
+                } else if (mapType === 'apple') {
+                    // 苹果地图：使用location.href确保能正确打开原生应用
+                    window.location.href = url;
+                } else {
+                    window.open(url, '_blank');
+                }
+            }
+        }
+
+        // 检测设备类型，自动选择合适的地图
+        function detectDeviceAndSuggestMap() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                // iOS设备，优先显示苹果地图
+                console.log('检测到iOS设备，建议使用苹果地图');
+            } else if (/android/i.test(userAgent)) {
+                // Android设备，优先显示高德或百度
+                console.log('检测到Android设备，建议使用高德或百度地图');
+            }
+        }
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', function() {
+            detectDeviceAndSuggestMap();
+            updateWeChatShareMeta();
+            optimizeNavigationForWeChat();
+            
+            // 如果在微信中，添加提示
+            if (isWeChat()) {
+                console.log('微信中打开，分享功能已优化');
+                // 可以在这里添加微信JS-SDK的初始化（需要申请微信开发者账号）
+            }
+        });
+
+        // 处理图片加载失败
+        document.getElementById('invitationImage').addEventListener('error', function() {
+            console.error('请柬图片加载失败，请检查图片URL是否正确');
+            this.alt = '请柬图片';
+        });
+
+        // 阻止微信中的长按保存图片（可选）
+        if (isWeChat()) {
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+        }
+    </script>
+</body>
+</html>
